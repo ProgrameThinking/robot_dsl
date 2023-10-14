@@ -14,8 +14,6 @@ pub enum Token {
     //keywords
     #[regex(r"(?i)global")]
     KeywordGlobal,
-    #[regex(r"(?i)fn")]
-    KeywordFn,
     #[regex(r"(?i)speak")]
     KeywordSpeak,
     #[regex(r"(?i)input")]
@@ -32,8 +30,6 @@ pub enum Token {
     LParen,
     #[token(")")]
     RParen,
-    #[token("=")]
-    Assign,
     #[token(";")]
     Semicolon,
     #[token("{")]
@@ -50,11 +46,15 @@ pub enum Token {
     OperatorMul,
     #[token("/")]
     OperatorDiv,
+    #[token("==")]
+    WEqual,
+    #[token("=")]
+    Assign,
 
     //literals
     #[regex("[_a-zA-Z][_0-9a-zA-Z]*", |lex| lex.slice().parse())]
     Identifier(String),
-    #[regex(r"[0-9]+\.[0-9]+", |lex| lex.slice().parse::<f64>())]
+    #[regex(r"[0-9]+(\.[0-9]+)?", |lex| lex.slice().parse::<f64>())]
     Number(f64),
     #[regex(r#""[^"]*""#, |lex| lex.slice()[1..lex.slice().len()-1].to_string())]
     StringContent(String),

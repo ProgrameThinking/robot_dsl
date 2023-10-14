@@ -1,7 +1,142 @@
 use robot_dsl::{
-  tokens::Token,
+  	tokens::Token,
+	lexer::LexicalError,
+	ast,
 };
 
 grammar;
 
+pub Program: Vec<Box<ast::Statement>> = {
+  	<stmts:Statement*> => stmts
+}
 
+pub Statement: Box<ast::Statement> = {
+    "global" <name:"identifier"> "=" <init: Expression> ";" => {
+      Box::new(ast::Statement::Var { name , init })
+    },
+    "if" "(" <condition:Expression> ")" <then:Block> ";" => {
+        Box::new(ast::Statement::Branch{condition,then})
+    },
+    "loop" <body:Block>  =>{
+        Box::new(ast::Statement::Loop{body})
+    },
+    "speak" <Expression> ";" =>{
+        Box::new(ast::Statement::Speak{expression:<>})
+    },
+    "input" <input:"identifier"> ";" => {
+        Box::new(ast::Statement::Input{input})
+    },
+    "exit" ";" => {
+        Box::new(ast::Statement::Exit)
+    },
+    Block,
+    <Expression> ";"=> {
+        Box::new(ast::Statement::Expression {
+            expression: <>
+    })
+}
+}
+
+Block:Box<ast::Statement> = {
+    "{" <stmts:Statement*> "}" => {
+		Box::new(ast::Statement::Block { statements: stmts })
+	}
+}
+
+pub Expression: Box<ast::Expr> = {
+    #[precedence(level="1")]
+
+    <name:"identifier"> "=" <value:Expression> => {
+        Box::new(ast::Expr::Assign { name,value })
+    },
+
+    <name:"identifier"> => {
+        Box::new(ast::Expr::Variable{name})
+    },
+
+    <value:"number"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::Number(value)})
+    },
+
+    <value:"stringExpr"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::String(value)})
+    },
+
+    #[precedence(level="2")]
+    #[assoc(side="left")]
+    <left: Expression> "*" <right: Expression> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::OperatorMul,
+            right,
+        })
+    },
+
+    <left:Expression> "/" <right:Expression> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::OperatorDiv,
+            right,
+        })
+    },
+
+    #[precedence(level="3")]
+    #[assoc(side="left")]
+    <left:Expression> "+" <right:Expression> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::OperatorAdd,
+            right,
+        })
+    },
+
+    <left:Expression> "-" <right:Expression> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::OperatorSub,
+            right,
+        })
+    },
+
+    #[precedence(level="4")]
+    #[assoc(side="left")]
+    <left:Expression> "==" <right:Expression> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::WEqual,
+            right,
+        })
+    },
+
+}
+
+extern {
+  type Location = usize;
+  type Error = LexicalError;
+
+  enum Token {
+    "global" => Token::KeywordGlobal,
+    "speak" => Token::KeywordSpeak,
+    "input" => Token::KeywordInput,
+    "if"  => Token::KeywordIf,
+    "exit" => Token::KeywordExit,
+    "loop" => Token::KeywordLoop,
+
+    "identifier" => Token::Identifier(<String>),
+    "number" => Token::Number(<f64>),
+    "stringExpr" => Token::StringContent(<String>),
+
+    "(" => Token::LParen,
+    ")" => Token::RParen,
+    "{" => Token::LBracket,
+    "}" => Token::RBracket,
+    ";" => Token::Semicolon,
+    
+    "=" => Token::Assign,
+    "+" => Token::OperatorAdd,
+    "-" => Token::OperatorSub,
+    "*" => Token::OperatorMul,
+    "/" => Token::OperatorDiv,
+    "==" => Token::WEqual,
+  }
+}

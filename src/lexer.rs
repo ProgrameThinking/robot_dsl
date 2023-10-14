@@ -57,18 +57,17 @@ mod tests {
     #[test]
     fn test_keywords_lexing() {
         test_token("global", Token::KeywordGlobal);
-        test_token("fn", Token::KeywordFn);
         test_token("speak", Token::KeywordSpeak);
         test_token("input", Token::KeywordInput);
         test_token("if", Token::KeywordIf);
         test_token("exit", Token::KeywordExit);
+        test_token("loop", Token::KeywordLoop);
     }
 
     #[test]
     fn test_single_lexing() {
         test_token("(", Token::LParen);
         test_token(")", Token::RParen);
-        test_token("=", Token::Assign);
         test_token(";", Token::Semicolon);
         test_token("{", Token::LBracket);
         test_token("}", Token::RBracket);
@@ -80,10 +79,12 @@ mod tests {
         test_token("-", Token::OperatorSub);
         test_token("*", Token::OperatorMul);
         test_token("/", Token::OperatorDiv);
+        test_token("=", Token::Assign);
+        test_token("==", Token::WEqual);
     }
 
     #[test]
-    fn test_literals_lexing() {
+    fn test_identifier_lexing() {
         //identifier test
         test_token(
             "identifier123",
@@ -103,12 +104,19 @@ mod tests {
             "mixed_Case123",
             Token::Identifier("mixed_Case123".to_string()),
         );
+    }
 
-        //number test
+    #[test]
+    fn test_number_lexing() {
         test_token("123.456", Token::Number(123.456));
         test_token("0.5", Token::Number(0.5));
         test_token("1.0", Token::Number(1.0));
         test_token("2.5", Token::Number(2.5));
+        test_token("15", Token::Number(15.0));
+    }
+
+    #[test]
+    fn test_string_lexing() {
         //string test
         test_token(
             "\"This is a string\"",
@@ -134,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_program_lexing() -> Result<(), Box<dyn std::error::Error>> {
-        let input_program = std::fs::read_to_string("examples/simple.dsl")?;
+        let input_program = std::fs::read_to_string("examples/lexerTest.dsl")?;
 
         let mut lexer = Lexer::new(&input_program[..]);
         let expected_tokens = vec![
@@ -143,15 +151,6 @@ mod tests {
             Token::Assign,
             Token::StringContent("".to_string()),
             Token::Semicolon,
-            Token::KeywordFn,
-            Token::Identifier("test".to_string()),
-            Token::LParen,
-            Token::RParen,
-            Token::LBracket,
-            Token::KeywordSpeak,
-            Token::StringContent("123321".to_string()),
-            Token::Semicolon,
-            Token::RBracket,
             Token::KeywordLoop,
             Token::LBracket,
             Token::KeywordSpeak,

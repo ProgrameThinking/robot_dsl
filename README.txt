@@ -1,4 +1,4 @@
-keyword:global,fn,speak,input,if,exit
+keyword:global,speak,input,if,exit,loop
 
 identifier:以字母开头，其余可为'_',字母和数字
 
@@ -24,20 +24,15 @@ Note:
 
 BNF:
 
-program := declaration mainloop
-
-declaration := globalvariable* functions*
+program := globalvariable* mainloop
 
 globalvariable := "global" identifier "=" (String|Number) ";"
-
-functions := "fn" identifier "(" ")" "{" expr* "}"
 
 mainloop := "loop" "{" expr* "}"
 
 expr := "speak" expr ";"
      |  "input" identifier ";"
-     |  "if" "(" expr ")" identifier "(" ")" ";"
-     |  "if" "(" expr ")" "exit" ";"
+     |  "if" "(" expr ")" "{" expr "}"  ";"
      |  expr + expr
      |  expr − expr
      |  expr ∗ expr
