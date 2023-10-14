@@ -20,7 +20,7 @@ pub Statement: Box<ast::Statement> = {
     "loop" <body:Block>  =>{
         Box::new(ast::Statement::Loop{body})
     },
-    "speak" <Expression> ";" =>{
+    "speak" <SpeakStmt> ";" =>{
         Box::new(ast::Statement::Speak{expression:<>})
     },
     "input" <input:"identifier"> ";" => {
@@ -37,6 +37,24 @@ pub Statement: Box<ast::Statement> = {
 }
 }
 
+SpeakStmt:Box<ast::Expr> = {
+    <value:"number"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::Number(value)})
+    },
+
+    <value:"stringExpr"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::String(value)})
+    },
+    
+    <left:SpeakStmt> "+" <right:Term> => {
+        Box::new(ast::Expr::Binary {
+            left,
+            operator: Token::OperatorAdd,
+            right,
+        })
+    }
+}
+
 Block:Box<ast::Statement> = {
     "{" <stmts:Statement*> "}" => {
 		Box::new(ast::Statement::Block { statements: stmts })
@@ -46,21 +64,7 @@ Block:Box<ast::Statement> = {
 pub Expression: Box<ast::Expr> = {
     #[precedence(level="1")]
 
-    <name:"identifier"> "=" <value:Expression> => {
-        Box::new(ast::Expr::Assign { name,value })
-    },
-
-    <name:"identifier"> => {
-        Box::new(ast::Expr::Variable{name})
-    },
-
-    <value:"number"> => {
-        Box::new(ast::Expr::Literal{value:ast::LiteralValue::Number(value)})
-    },
-
-    <value:"stringExpr"> => {
-        Box::new(ast::Expr::Literal{value:ast::LiteralValue::String(value)})
-    },
+    Term,
 
     #[precedence(level="2")]
     #[assoc(side="left")]
@@ -107,7 +111,26 @@ pub Expression: Box<ast::Expr> = {
             right,
         })
     },
+    #[precedence(level="5")]
+    #[assoc(side="left")]
+    <name:"identifier"> "=" <value:Expression> => {
+        Box::new(ast::Expr::Assign { name,value })
+    },
+}
 
+pub Term: Box<ast::Expr> = {
+    <name:"identifier"> => {
+        Box::new(ast::Expr::Variable{name})
+    },
+
+    <value:"number"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::Number(value)})
+    },
+
+    <value:"stringExpr"> => {
+        Box::new(ast::Expr::Literal{value:ast::LiteralValue::String(value)})
+    },
+    "(" <Expression> ")" ,
 }
 
 extern {

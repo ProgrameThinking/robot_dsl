@@ -1,3 +1,1 @@
-# Author: SakurakojiSaika
-
-global my_var = 42;
+speak "你的账户余额为"+bill;
