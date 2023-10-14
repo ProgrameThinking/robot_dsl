@@ -8,6 +8,10 @@ lalrpop_mod!(pub grammar);
 fn main() -> Result<(), Box<dyn std::error::Error>>{
     let source_code = std::fs::read_to_string("examples/simple.dsl")?;
     let lexer = Lexer::new(&source_code[..]);
+    // // 打印 token 流
+    // for token in lexer {
+    //     println!("{:?}", token);
+    // }
     let parser = grammar::ProgramParser::new();
     let ast = parser.parse(lexer)?;
     for statement in ast {
