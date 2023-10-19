@@ -42,13 +42,13 @@ impl Interpreter {
         if self.env.len() < 2 {
             return; // 如果环境中的 HashMap 小于 2 个，无法进行比较
         }
-    
+
         let last_idx = self.env.len() - 1;
         let second_last_idx = last_idx - 1;
-    
+
         let last_env = self.env.get(last_idx).cloned();
         let second_last_env = self.env.get_mut(second_last_idx);
-    
+
         if let (Some(last_env), Some(second_last_env)) = (last_env, second_last_env) {
             // 创建一个克隆的 HashMap，用于存储需要更新的键值对
             let updates: HashMap<String, String> = last_env
@@ -59,7 +59,7 @@ impl Interpreter {
                 })
                 .map(|(key, value)| (key.clone(), value.clone()))
                 .collect();
-    
+
             // 更新倒数第二个 HashMap
             second_last_env.extend(updates);
         }
@@ -162,11 +162,7 @@ impl Utils for Box<Expr> {
             Expr::Assign { .. } => {
                 panic!("本程序不允许采用连等式!");
             }
-            Expr::Binary {
-                left,
-                operator,
-                right,
-            } => {
+            Expr::Binary { .. } => {
                 let mut cur_env = env.clone();
                 if let Expr::Literal { value: res } = *self.exec(&mut cur_env) {
                     match res {
@@ -175,9 +171,6 @@ impl Utils for Box<Expr> {
                         }
                         ast::LiteralValue::Number(value) => {
                             format!("{}", value.to_string())
-                        }
-                        _ => {
-                            panic!("结果非字符串！")
                         }
                     }
                 } else {
