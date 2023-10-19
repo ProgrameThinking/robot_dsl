@@ -50,6 +50,8 @@ pub enum Token {
     WEqual,
     #[token("=")]
     Assign,
+    #[token("!=")]
+    BangEqual,
 
     //literals
     #[regex("[_a-zA-Z][_0-9a-zA-Z]*", |lex| lex.slice().parse())]

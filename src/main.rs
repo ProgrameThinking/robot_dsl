@@ -1,12 +1,11 @@
 use lalrpop_util::lalrpop_mod;
+use robot_dsl::interpreter::Interpreter;
 use robot_dsl::lexer::Lexer;
-use robot_dsl::ast;
-//use robot_dsl::interpreter;
 lalrpop_mod!(pub grammar);
 
 //#[cfg(not(test))]
 fn main() -> Result<(), Box<dyn std::error::Error>>{
-    let source_code = std::fs::read_to_string("examples/simple.dsl")?;
+    let source_code = std::fs::read_to_string("examples/bank.dsl")?;
     let lexer = Lexer::new(&source_code[..]);
     // // 打印 token 流
     // for token in lexer {
@@ -14,13 +13,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     // }
     let parser = grammar::ProgramParser::new();
     let ast = parser.parse(lexer)?;
-    for statement in ast {
-        let statement_ref: &ast::Statement = statement.as_ref();
-        println!("{:?}",statement_ref);
+    // for statement in ast {
+    //     let statement_ref: &ast::Statement = statement.as_ref();
+    //     println!("{:?}",statement_ref);
 
-    }
-    //let interpreter= Interpreter(ast);
-    //interpreter.execute();
+    // }
+    let mut interpreter= Interpreter::new(ast);
+    interpreter.interpret();
     Ok(())
 }
 

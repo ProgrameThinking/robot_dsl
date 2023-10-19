@@ -1,6 +1,5 @@
 use crate::tokens::Token;
 use std::fmt;
-
 /*
  * 语法树中表达式的枚举类型，方便递归下降分析
  * 共有如下表达式：
@@ -10,7 +9,7 @@ use std::fmt;
  * - 赋值语句
  */
 
- #[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     /* 赋值表达式 example: a=b+c */
     Assign {
@@ -40,10 +39,19 @@ pub enum Expr {
  * - 字符串
  */
 
- #[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum LiteralValue {
     Number(f64),
     String(String),
+}
+
+impl LiteralValue {
+    pub fn trans(&self) -> String {
+        match self {
+            LiteralValue::Number(n) => n.to_string(),
+            LiteralValue::String(s) => s.clone(),
+        }
+    }
 }
 
 impl fmt::Display for LiteralValue {
@@ -74,7 +82,7 @@ impl fmt::Display for Expr {
  * - 退出语句(exit;)
  */
 
- #[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Statement {
     /* 块语句 */
     Block {

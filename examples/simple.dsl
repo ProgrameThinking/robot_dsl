@@ -1,1 +1,6 @@
-speak 1+2+3*4;
+global x=5;
+global bill=0;
+
+speak bill;
+bill=bill+x;
+speak bill;

@@ -20,7 +20,7 @@ pub Statement: Box<ast::Statement> = {
     "loop" <body:Block>  =>{
         Box::new(ast::Statement::Loop{body})
     },
-    "speak" <SpeakStmt> ";" =>{
+    "speak" <Expression> ";" =>{
         Box::new(ast::Statement::Speak{expression:<>})
     },
     "input" <input:"identifier"> ";" => {
@@ -35,24 +35,6 @@ pub Statement: Box<ast::Statement> = {
             expression: <>
     })
 }
-}
-
-SpeakStmt:Box<ast::Expr> = {
-    <value:"number"> => {
-        Box::new(ast::Expr::Literal{value:ast::LiteralValue::Number(value)})
-    },
-
-    <value:"stringExpr"> => {
-        Box::new(ast::Expr::Literal{value:ast::LiteralValue::String(value)})
-    },
-    
-    <left:SpeakStmt> "+" <right:Term> => {
-        Box::new(ast::Expr::Binary {
-            left,
-            operator: Token::OperatorAdd,
-            right,
-        })
-    }
 }
 
 Block:Box<ast::Statement> = {
