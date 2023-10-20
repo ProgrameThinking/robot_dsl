@@ -1,56 +1,15 @@
-keyword:global,speak,input,if,exit,loop
+***@author:SakurakojiSaika,chatgpt 3.5***  
+***@Version:rustc 1.72.0***  
+***If it's helpful for you, please give me a star***.
 
-identifier:以字母开头，其余可为'_',字母和数字
+描述
 
-number：只支持十进制整数和小数
+领域特定语言（Domain Specific Language，DSL）可以提供一种相对简单的文法，用于特定领域的业务流程定制。本作业要求定义一个领域特定脚本语言，这个语言能够描述在线客服机器人（机器人客服是目前提升客服效率的重要技术，在银行、通信和商务等领域的复杂信息系统中有广泛的应用）的自动应答逻辑，并设计实现一个解释器解释执行这个脚本，可以根据用户的不同输入，根据脚本的逻辑设计给出相应的应答。
 
-string：字符串 ""包围
+基本要求
 
-';':语句结束符
+- 脚本语言的语法可以自由定义，只要语义上满足描述客服机器人自动应答逻辑的要求。
 
-'(':left_paren
+- 程序输入输出形式不限，可以简化为纯命令行界面。
 
-')':right_paren
-
-operator: +,-,*,/,==,=
-
-'{}':用于表示代码块的开始与结束
-
-'""':字符串
-
-Note:
-
-本dsl仅支持单行注释 使用#
-
-BNF:
-
-program := globalvariable* mainloop
-
-globalvariable := "global" identifier "=" (String|Number) ";"
-
-mainloop := "loop" "{" expr* "}"
-
-expr := "speak" expr ";"
-     |  "input" identifier ";"
-     |  "if" "(" expr ")" "{" expr "}"  ";"
-     |  expr + expr
-     |  expr − expr
-     |  expr ∗ expr
-     |  expr / expr
-     |  expr = expr
-     |  expr == expr
-     |  (expr)
-     |  Number
-     |  String
-     |  identifier
-     |  "exit"
-
-     
-
-identifier := (letter|"_") (letter|digit|"_")*
-
-String := \" [^"] \"
-
-Number := digit+(\.digit+)?
-
-digit := [0-9]
+- 应该给出几种不同的脚本范例，对不同脚本范例解释器执行之后会有不同的行为表现。
